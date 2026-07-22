@@ -15,12 +15,13 @@ Change it deliberately.
 never say *how* todos are persisted. The runner binds the model to a concrete storage
 mechanism through a per-implementation **adapter** with two operations:
 
-- `seed(model)` — establish the given todos as the persisted state before the app loads
+- `seed(model)` — establish the given todos as the *entire* persisted state (replacing
+  whatever was there) before the scenario's first page load
 - `read() → model` — return the currently persisted todos
 
-(For a client-side SPA the adapter reads/writes localStorage; for a server-rendered app
-it would talk to the server's store. The adapter is disposable code, regenerated along
-with the app it belongs to.)
+How seed/read reach the storage is defined by the harness contract (`HARNESS.md`);
+nothing in the scenarios depends on that mechanism. The adapter is disposable code,
+regenerated along with the app it belongs to.
 
 The persisted representation carries `id`, `title`, `completed` per item (see
 `docs/spec.md` § Persistence). Ids are part of the contract: they are opaque non-empty
@@ -40,7 +41,7 @@ and followed by an indented block (4 spaces):
 | Section | Required | Meaning |
 |---|---|---|
 | `GIVEN model:` | yes | model seeded before the app loads |
-| `GIVEN route:` | no | initial URL hash, written inline on the keyword line itself, e.g. `GIVEN route: #/active` (default: none) |
+| `GIVEN route:` | no | initial URL path, written inline on the keyword line itself, e.g. `GIVEN route: /active` (default: `/`) |
 | `WHEN:` | no | user actions, one per line, executed in order |
 | `THEN page:` | no* | expected page projection after the last action |
 | `THEN model:` | no* | expected model after the last action |
@@ -135,7 +136,7 @@ extend this table deliberately (and note why) rather than improvising in a scena
 | `click toggle-all` | click the mark-all-as-complete checkbox |
 | `click "Clear completed"` | click the Clear-completed button |
 | `click filter "Active"` | click that filter link (All / Active / Completed) |
-| `go to "#/active"` | navigate to that URL hash |
+| `go to "/active"` | navigate to that URL path |
 | `reload` | reload the page (persisted state must survive; in-memory state need not) |
 | `hover "title"` | move the pointer over that todo |
 

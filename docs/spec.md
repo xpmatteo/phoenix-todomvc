@@ -52,10 +52,16 @@ Your app should dynamically persist the todos, immediately after every interacti
 
 ### Routing
 
-The following routes should be implemented: `#/` (all - default), `#/active` and `#/completed` (`#!/` is also allowed). When the route changes, the todo list should be filtered on a model level and the `selected` class on the filter links should be toggled. When an item is updated while in a filtered state, it should be updated accordingly. E.g. if the filter is `Active` and the item is checked, it should be hidden. Make sure the active filter is persisted on reload.
+The app is server-rendered: each route is a distinct URL path rendered by the server. Implement `/` (all - default), `/active` and `/completed`. The filter links in the footer navigate to these routes, and the `selected` class is set on the link matching the current route. The displayed todo list contains only the items matching the route's filter. When an item is updated while in a filtered state, the displayed list updates accordingly: e.g. if the filter is `Active` and the item is checked, it disappears from the list. Reloading the page keeps the current filter.
 
 
 ## Technical constraints
+
+### Architecture
+
+The app is a server-rendered Go application. Todos are persisted in SQLite. Client-side JavaScript is allowed only to progressively enhance interactions this spec requires (e.g. double-click to edit, Escape to cancel); rendering and filtering happen on the server.
+
+The app must provide storage access to the eval harness as a local side channel that is not reachable over any network listener, so that no configuration mistake can expose it to the web — see `evals/HARNESS.md`. This is typically a pair of commands that access the database file directly.
 
 ### README
 

@@ -2,13 +2,8 @@
 
 Covers `docs/spec.md` § "Routing".
 
-The default route (`#/`, all todos, `(All)` selected) is pinned by every other
+The default route (`/`, all todos, `(All)` selected) is pinned by every other
 scenario in this suite, since they all run without a `GIVEN route:`.
-
-NOTE: the spec says the `#!/` route prefix "is also allowed". This suite pins the
-`#/` form as required and does not exercise `#!/` — permitting an alternative is
-not testable as an obligation. If we ever want `#!/` guaranteed, the spec must
-promote it from "allowed" to "required" and a scenario should be added here.
 
 ## The Active filter shows only active todos
 
@@ -17,7 +12,7 @@ GIVEN model:
     [ ] buy milk
     [x] walk the dog
 
-GIVEN route: #/active
+GIVEN route: /active
 
 THEN page:
 
@@ -35,7 +30,7 @@ GIVEN model:
     [ ] buy milk
     [x] walk the dog
 
-GIVEN route: #/completed
+GIVEN route: /completed
 
 THEN page:
 
@@ -67,7 +62,7 @@ GIVEN model:
     [ ] buy milk
     [ ] walk the dog
 
-GIVEN route: #/active
+GIVEN route: /active
 
 WHEN:
 

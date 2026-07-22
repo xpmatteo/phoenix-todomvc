@@ -10,13 +10,14 @@ read back. A fresh agent must be able to build the runner from this document plu
 
 - **Runner** (`evals/runner/`) — a Go program. Parses the scenario files per
   `DSL.md`, drives a real browser over the Chrome DevTools Protocol, and uses the
-  adapter files described below. It contains no knowledge of any particular
+  adapter described below. It contains no knowledge of any particular
   implementation and is never modified when the app is regenerated. It is
   disposable in principle (rebuildable from these documents) but stable in
   practice.
 
 - **Adapter** — shipped *by each implementation* inside `app/`, regenerated along
-  with it. The only place that knows how the app is built, served, and persisted.
+  with it: the `harness.json` manifest and the executables it names. The only
+  place that knows how the app is built, served, and persisted.
 
 The DOM vocabulary the runner needs (element classes, structure, the `data-id`
 attribute) is defined by `docs/main-screen-template.html` and
@@ -25,58 +26,59 @@ of an element means rendered visibility (computed style), not mere DOM presence.
 
 ## What every implementation must provide
 
-### 1. `app/harness.json`
+A manifest at `app/harness.json`:
 
     {
       "start": "go run ./cmd/todomvc",
-      "url": "http://localhost:8080"
+      "url": "http://localhost:8080",
+      "seed": "go run ./cmd/evalctl seed",
+      "read": "go run ./cmd/evalctl read"
     }
 
-- `start` — a command, executed with `app/` as working directory, that builds (if
-  needed) and serves the app at `url` until the process is killed. The runner polls
-  `url` until it responds with HTTP 200 (timeout: 60s), and kills the process group
-  when the run ends.
-- `url` — where the running app is reachable.
+All commands are executed with `app/` as the working directory.
 
-### 2. `app/eval-adapter/seed.js`
+- `start` — builds (if needed) and serves the app at `url` until the process is
+  killed. The runner starts it once per run, polls `url` until it responds with
+  HTTP 200 (timeout: 60s), and kills the process group when the run ends.
 
-A single JS **function expression** taking the model and establishing it as the
-persisted state:
+- `seed` — reads a model from stdin and **replaces the entire persisted state**
+  with it. The model is a JSON array of `{id, title, completed}` objects, possibly
+  empty; ids are stored verbatim. Must work while the app server is running, and
+  must exit 0 only on success.
 
-    (model) => { localStorage.setItem('todos', JSON.stringify(model)) }
+- `read` — writes the currently persisted model to stdout as the same JSON array
+  shape, in persisted order, and exits 0.
 
-- `model` is an array of `{id, title, completed}` objects (ids seeded verbatim).
-- Executed by the runner in a page on the app's origin. May return a Promise; the
-  runner awaits it.
+### Side-channel requirement
 
-### 3. `app/eval-adapter/read.js`
-
-A single JS function expression returning the currently persisted model (or a
-Promise of it), in persisted order, as the same array shape:
-
-    () => JSON.parse(localStorage.getItem('todos') ?? '[]')
-
-A server-side implementation would instead `fetch()` its own store through an
-endpoint it provides for this purpose. Either way the runner only ever sees
-`[{id, title, completed}]`.
+`seed` and `read` are a **local side channel**: they must access the storage
+directly (e.g. opening the SQLite database file), never through a network
+listener of any kind. The app must not expose any way to reach this
+functionality over the web — the point is that no configuration mistake can
+ever make it web-accessible. Access control is the filesystem, nothing else.
 
 ## Execution semantics, per scenario
 
-1. Create a fresh browser context — no cookies, no storage, nothing survives from
-   any previous scenario.
-2. Navigate to `url`, evaluate `seed.js` with the `GIVEN model:` (skip evaluation
-   for `(empty)`).
-3. Navigate to `url` + the `GIVEN route:` hash (or plain `url` if none) with a full
-   page (re)load. The scenario's observations start from this load.
-4. Execute the `WHEN:` steps in order. The `reload` action reloads the current URL;
-   the browser context (and therefore client-side storage) is preserved.
+1. Create a fresh browser context — no cookies, no client-side state survives
+   from any previous scenario.
+2. Run the `seed` command with the `GIVEN model:` — **including when it is
+   `(empty)`**, which seeds the empty array. State lives server-side, so skipping
+   the seed would leak the previous scenario's todos into this one.
+3. Navigate to `url` + the `GIVEN route:` path (default `/`) with a full page
+   load. The scenario's observations start from this load.
+4. Execute the `WHEN:` steps in order. The `reload` action reloads the current
+   URL.
 5. Evaluate the `THEN` sections: `THEN page:` by projecting the DOM per `DSL.md`;
-   `THEN model:` by evaluating `read.js`; `THEN check:` per the check registry.
+   `THEN model:` by running the `read` command; `THEN check:` per the check
+   registry.
+
+The app process is started once for the whole run, not per scenario; per-scenario
+isolation is entirely the `seed` command's replace-everything semantics.
 
 ## Trust boundary
 
-`seed.js`/`read.js` are generated together with the app, so the harness verifies
-the app against the *model semantics* (what todos exist, in what state and order),
-not against any particular storage representation. Whether the raw persisted format
-itself is part of the contract is deliberately out of scope here — see the coverage
-audit; if it ever becomes contractual, the enforcement must live outside `app/`.
+The adapter is generated together with the app, so the harness verifies the app
+against the *model semantics* (what todos exist, in what state and order), not
+against any particular storage schema. Whether the raw persisted format itself is
+part of the contract is deliberately out of scope here — see the coverage audit;
+if it ever becomes contractual, the enforcement must live outside `app/`.
