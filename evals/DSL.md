@@ -162,8 +162,9 @@ deliberately.
   so the diff stays exact while ids remain opt-in per line.
 - Compare `THEN model:` by title, completed state, and order; compare ids only where
   the expected line carries one. Independently verify that every persisted item has a
-  non-empty string id and that every displayed item's data-id matches some persisted
-  item's id.
+  non-empty string id and that every displayed item's data-id equals the id of the
+  persisted item bearing the same title — not merely *some* persisted id, so swapped
+  ids between two rows fail. (Well-defined because titles are unique per scenario.)
 - Read the model via the adapter only after the app has had the chance to persist
   (the spec requires persistence immediately after every interaction).
 - The runner and adapters are disposable. This file and `evals/scenarios/` are not.

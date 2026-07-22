@@ -43,7 +43,7 @@ WHEN:
 THEN page:
 
     v >
-    [ ] walk the dog
+    #b2 [ ] walk the dog
     -- **1** item left | (All) Active Completed
 
 THEN model:
@@ -51,7 +51,8 @@ THEN model:
     #b2 [ ] walk the dog
 
 NOTE: the ids pin that the right item was removed and the survivor kept its
-identity.
+identity — asserted both in the persisted model and on the rendered row's
+data-id attribute.
 
 ## Destroying the last todo hides main and footer
 
