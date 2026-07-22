@@ -9,9 +9,9 @@ from Chad Fowler's [The Phoenix Architecture blog](https://aicoding.leaflet.pub/
 
 | Path | Status | What it is |
 |---|---|---|
-| `docs/spec.md` | durable | behavioral specification |
-| `docs/architecture.md` | durable | non-functional requirements and the architecture decisions derived from them |
-| `docs/main-screen-template.html/.css` | durable | the UI contract: DOM vocabulary and styling |
+| `spec/spec.md` | durable | behavioral specification |
+| `spec/architecture.md` | durable | non-functional requirements and the architecture decisions derived from them |
+| `spec/main-screen-template.html/.css` | durable | the UI contract: DOM vocabulary and styling |
 | `docs/principles.md` | durable | distilled Phoenix Architecture principles |
 | `evals/DSL.md` | durable | the scenario language definition |
 | `evals/HARNESS.md` | durable | the runner ↔ implementation contract |
@@ -30,10 +30,10 @@ Every requirement lives in exactly one home, chosen by one test:
 
 > **Could a black-box scenario fail because of this?**
 
-- **Yes** → it belongs in `docs/spec.md` (and should be pinned by a scenario in
+- **Yes** → it belongs in `spec/spec.md` (and should be pinned by a scenario in
   `evals/scenarios/`). The spec contains only behavior observable through the eval
   surface: rendered UI, persisted model, URLs.
-- **No** → it belongs in `docs/architecture.md`, as a decision traced to a
+- **No** → it belongs in `spec/architecture.md`, as a decision traced to a
   non-functional requirement, with its own enforcement (architecture tests, static
   checks, or review) — the behavioral evals are deliberately blind to it.
 - Anything that is *interface between the evals and the app* (how to start, seed,

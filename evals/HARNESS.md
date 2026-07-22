@@ -20,8 +20,8 @@ read back. A fresh agent must be able to build the runner from this document plu
   place that knows how the app is built, served, and persisted.
 
 The DOM vocabulary the runner needs (element classes, structure, the `data-id`
-attribute) is defined by `docs/main-screen-template.html` and
-`docs/main-screen-template.css`, which are part of the durable contract. Visibility
+attribute) is defined by `spec/main-screen-template.html` and
+`spec/main-screen-template.css`, which are part of the durable contract. Visibility
 of an element means rendered visibility (computed style), not mere DOM presence.
 
 ## What every implementation must provide

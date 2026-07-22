@@ -1,6 +1,6 @@
 # Routing
 
-Covers `docs/spec.md` § "Routing".
+Covers `spec/spec.md` § "Routing".
 
 The default route (`/`, all todos, `(All)` selected) is pinned by every other
 scenario in this suite, since they all run without a `GIVEN route:`.

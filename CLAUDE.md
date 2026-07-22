@@ -1,8 +1,8 @@
 # Working in this repository
 
 Read `README.md` first: it defines what is durable vs disposable here, and the
-boundary rule deciding whether a requirement belongs in `docs/spec.md`,
-`docs/architecture.md`, or `evals/HARNESS.md`. Follow it strictly.
+boundary rule deciding whether a requirement belongs in `spec/spec.md`,
+`spec/architecture.md`, or `evals/HARNESS.md`. Follow it strictly.
 
 Hard rules:
 

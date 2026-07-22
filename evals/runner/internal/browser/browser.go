@@ -1,6 +1,6 @@
 // Package browser drives a real Chrome over CDP (via chromedp) and implements
 // the page projection, action vocabulary, and check registry of evals/DSL.md
-// against the DOM vocabulary of docs/main-screen-template.html.
+// against the DOM vocabulary of spec/main-screen-template.html.
 package browser
 
 import (

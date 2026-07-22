@@ -1,6 +1,6 @@
 # Mark all as complete
 
-Covers `docs/spec.md` § "Mark all as complete".
+Covers `spec/spec.md` § "Mark all as complete".
 
 ## Clicking the toggle completes every todo
 

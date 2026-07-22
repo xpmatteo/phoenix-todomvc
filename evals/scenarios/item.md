@@ -1,6 +1,6 @@
 # Item
 
-Covers `docs/spec.md` § "Item" (toggle, destroy, hover). The editing interaction
+Covers `spec/spec.md` § "Item" (toggle, destroy, hover). The editing interaction
 is covered in `editing.md`.
 
 ## Unchecking a completed todo reactivates it

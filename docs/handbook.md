@@ -7,18 +7,18 @@ practical advice, grounded in practical experience.
 
 ## The components of the game
 
-**Specs** live in `specs` and include:
+**Specs** live in `spec/` and include:
   - business rules
   - screen templates
   - architectural rules
 
 **Evals** are built out of a domain-specific testing language, and live in their 
 own folder `evals`.  This makes them implementation-agnostic.  The DSL is specified
-in `eval/DSL.md`, and how to build the **Eval runner** is specified in `evals/HARNESS.md`.
+in `evals/DSL.md`, and how to build the **Eval runner** is specified in `evals/HARNESS.md`.
 We can thus apply the Phoenix principle to the eval runner itself, which is disposable.
 
 The **architectural rules** come from non-functional requirements, stated in the 
-`specs/architecture.md` document itself.  Every architectural decision is presented in
+`spec/architecture.md` document itself.  Every architectural decision is presented in
 ADR-style.
 
 The architectural rules are tested through architectural tests, eg lints.
@@ -171,7 +171,7 @@ built on it. (2026-07-22)
   `HARNESS.md` + scenarios + templates ONLY; every ambiguity is logged as a
   defect in the documents (`QUESTIONS.md`), not solved by peeking at the spec.
   The gap log's length is a measurement of the durable artifacts' quality.
-- **Architecture tests:** the roadmap in `docs/architecture.md` — JS-disabled
+- **Architecture tests:** the roadmap in `spec/architecture.md` — JS-disabled
   eval run, dependency allowlist, import-graph check, side-channel isolation,
   static template/README conformance.
 - **The first regeneration:** generate `app/` from the durable artifacts; then

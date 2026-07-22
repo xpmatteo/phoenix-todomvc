@@ -1,6 +1,6 @@
 # Schema — durable, append-only
 
-Status: **durable artifact** (see AD-7 in `docs/architecture.md`). The database
+Status: **durable artifact** (see AD-7 in `spec/architecture.md`). The database
 outlives every generated implementation; this directory is the provenance of its
 shape.
 
@@ -18,5 +18,5 @@ shape.
 `todos.seq` (autoincrement) is the display order: the spec orders todos by
 creation, and SQLite rowids may be reused after deletes, so ordering relies on an
 explicit monotonic column, never on rowid. `id` is the contract identifier from
-`docs/spec.md` (opaque non-empty string, stable for the item's lifetime, exposed
+`spec/spec.md` (opaque non-empty string, stable for the item's lifetime, exposed
 as `data-id`); `seq` is internal and never leaves the database.

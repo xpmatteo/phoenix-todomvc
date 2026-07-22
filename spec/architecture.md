@@ -111,7 +111,7 @@ Non-behavioral obligations on the generated implementation (moved from the spec)
 
 - `app/` includes a README describing the general implementation and the build
   process.
-- The served HTML stays as close to `docs/main-screen-template.html` as possible;
+- The served HTML stays as close to `spec/main-screen-template.html` as possible;
   template comments are not shipped.
 *Enforcement:* planned static conformance checks alongside the runner.
 

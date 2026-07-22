@@ -129,7 +129,7 @@ Chronological; one line each.
 
 Inferences for a TodoMVC spec-and-evals regeneration experiment:
 
-- The spec (`docs/spec.md`) and the black-box eval suite are the repository's only durable artifacts; every generated implementation should be deletable without ceremony. The success criterion is that regeneration from spec + evals is boring.
+- The spec (`spec/spec.md`) and the black-box eval suite are the repository's only durable artifacts; every generated implementation should be deletable without ceremony. The success criterion is that regeneration from spec + evals is boring.
 - Evals must pass the author's language test: they should drive the app purely through its external surface (rendered UI / DOM / HTTP), so a regeneration in a different framework or language leaves the suite valid and green.
 - The TodoMVC UI is the conservation layer: the spec should pin user-visible behavior, element semantics, and flows precisely and change them rarely, while implementations underneath churn freely.
 - TodoMVC is small enough to be a single regenerative grain with n=1 capability; if regeneration ever requires reading the previous implementation, treat that as a spec or eval gap and fix it upstream, never by hand-patching generated code.

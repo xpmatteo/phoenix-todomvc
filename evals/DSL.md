@@ -24,7 +24,7 @@ nothing in the scenarios depends on that mechanism. The adapter is disposable co
 regenerated along with the app it belongs to.
 
 The persisted representation carries `id`, `title`, `completed` per item (see
-`docs/spec.md` § Persistence). Ids are part of the contract: they are opaque non-empty
+`spec/spec.md` § Persistence). Ids are part of the contract: they are opaque non-empty
 strings, and each rendered todo item carries a `data-id` attribute equal to its
 persisted id. The notation treats ids as optional — a scenario writes them only when
 identity matters (see "Model notation").

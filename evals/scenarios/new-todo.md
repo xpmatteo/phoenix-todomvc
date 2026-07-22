@@ -1,6 +1,6 @@
 # New todo
 
-Covers `docs/spec.md` § "New todo" and § "No todos".
+Covers `spec/spec.md` § "New todo" and § "No todos".
 
 ## The input is focused on load, and an empty app hides main and footer
 

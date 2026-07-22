@@ -1,6 +1,6 @@
 # Editing
 
-Covers `docs/spec.md` § "Editing" and the editing interaction of § "Item".
+Covers `spec/spec.md` § "Editing" and the editing interaction of § "Item".
 
 ## Double-clicking a label enters editing mode
 

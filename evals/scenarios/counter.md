@@ -1,6 +1,6 @@
 # Counter
 
-Covers `docs/spec.md` § "Counter".
+Covers `spec/spec.md` § "Counter".
 
 ## Zero active todos reads "0 items left"
 

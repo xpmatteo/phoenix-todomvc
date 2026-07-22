@@ -1,6 +1,6 @@
 # Persistence
 
-Covers `docs/spec.md` § "Persistence".
+Covers `spec/spec.md` § "Persistence".
 
 That todos are persisted *immediately after every interaction* is asserted all
 over this suite: every `THEN model:` reads the persisted state right after the

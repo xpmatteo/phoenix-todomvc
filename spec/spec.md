@@ -55,6 +55,6 @@ Your app should dynamically persist the todos, immediately after every interacti
 The app is server-rendered: each route is a distinct URL path rendered by the server. Implement `/` (all - default), `/active` and `/completed`. The filter links in the footer navigate to these routes, and the `selected` class is set on the link matching the current route. The displayed todo list contains only the items matching the route's filter. When an item is updated while in a filtered state, the displayed list updates accordingly: e.g. if the filter is `Active` and the item is checked, it disappears from the list. Reloading the page keeps the current filter.
 
 
-The spec deliberately ends here: it contains only behavior observable through the eval surface. Constraints on *how* the app is built live in `docs/architecture.md`; the eval harness interface lives in `evals/HARNESS.md` (see the boundary rule in `README.md`).
+The spec deliberately ends here: it contains only behavior observable through the eval surface. Constraints on *how* the app is built live in `spec/architecture.md`; the eval harness interface lives in `evals/HARNESS.md` (see the boundary rule in `README.md`).
 
 

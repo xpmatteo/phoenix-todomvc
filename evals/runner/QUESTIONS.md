@@ -1,7 +1,7 @@
 # Runner build — gap log
 
 Defects/ambiguities found in the durable documents (`evals/DSL.md`, `evals/HARNESS.md`,
-`evals/scenarios/*.md`, `docs/main-screen-template.{html,css}`) while building the runner
+`evals/scenarios/*.md`, `spec/main-screen-template.{html,css}`) while building the runner
 from them alone. Each entry: what was needed, where the docs fell short, what was chosen.
 
 ## 1. Who assigns ids omitted in `GIVEN model:` — DSL and HARNESS disagree
@@ -28,7 +28,7 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
 ## 3. Prose outside sections (file preambles)
 
 - **Needed:** to parse files like `routing.md`, which carry unindented prose between the
-  `# h1` and the first `## scenario` ("Covers docs/spec.md …", "The default route …").
+  `# h1` and the first `## scenario` ("Covers spec/spec.md …", "The default route …").
 - **Docs:** DSL.md defines only `## heading` + keyword sections; it says nothing about
   preamble text.
 - **Chose:** everything before the first `## ` heading is ignored. *Inside* a scenario,

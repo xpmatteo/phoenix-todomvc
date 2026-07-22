@@ -1,6 +1,6 @@
 # Clear completed
 
-Covers `docs/spec.md` § "Clear completed button". Visibility of the button is
+Covers `spec/spec.md` § "Clear completed button". Visibility of the button is
 also pinned incidentally throughout the suite by the presence or absence of
 `| [Clear completed]` on footer lines.
 
