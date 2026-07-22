@@ -1,10 +1,39 @@
 # Phoenix Handbook
 
 Status: **durable, living document**. Practice learnings from building this
-repository — what actually happened when we tried to make the spec and evals the
-durable artifact. `docs/principles.md` is the theory (distilled from Fowler);
-this is our own lab notebook. Each entry states the learning, then the concrete
-episode that taught it. Append as we learn; date the entries.
+repository — how to make the Phoenix architecture practical. 
+The `docs/principles.md` is the theory (distilled from Fowler); this is our own
+practical advice, grounded in practical experience. 
+
+## The components of the game
+
+**Specs** live in `specs` and include:
+  - business rules
+  - screen templates
+  - architectural rules
+
+**Evals** are built out of a domain-specific testing language, and live in their 
+own folder `evals`.  This makes them implementation-agnostic.  The DSL is specified
+in `eval/DSL.md`, and how to build the **Eval runner** is specified in `evals/HARNESS.md`.
+We can thus apply the Phoenix principle to the eval runner itself, which is disposable.
+
+The **architectural rules** come from non-functional requirements, stated in the 
+`specs/architecture.md` document itself.  Every architectural decision is presented in
+ADR-style.
+
+The architectural rules are tested through architectural tests, eg lints.
+
+The application data must usually be durable, so its DB schema must also be.  A regeneration
+that destroys data is not acceptable.  Therefore, the **DB schema** lives in its own folder
+`schema`, and a method for schema evolution must be specified in the architecture document.
+
+The evals will likely need side channels to inspect the application state, because
+the alternative is to execute long strings of user-accessible operations to get the app
+to the desired state, which is inconvenient because it's slow, reduces test reliability, 
+and might push us to implement user-accessible operations that are only required by
+the evals, which in turn increases the app surface and thus reduces security.
+
+
 
 ## Boundaries and document architecture
 
