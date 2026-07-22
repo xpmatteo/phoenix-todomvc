@@ -2,7 +2,8 @@
 
 This repository explores regenerative ("phoenix") software: the specification and
 the evaluations are the durable artifacts; the implementation is disposable and is
-regenerated from them when they change. Background: `docs/principles.md`.
+regenerated from them when they change. Background: `docs/principles.md`, distilled 
+from Chad Fowler's [The Phoenix Architecture blog](https://aicoding.leaflet.pub/).
 
 ## Layout: durable vs disposable
 
