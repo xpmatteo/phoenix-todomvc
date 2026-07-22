@@ -15,6 +15,7 @@ regenerated from them when they change. Background: `docs/principles.md`.
 | `evals/DSL.md` | durable | the scenario language definition |
 | `evals/HARNESS.md` | durable | the runner ↔ implementation contract |
 | `evals/scenarios/` | durable | the executable specification-by-example |
+| `schema/` | durable, **append-only** | the database schema's migration chain — provenance for data, which outlives every implementation |
 | `evals/runner/` | rebuildable | test runner; rebuildable from DSL.md + HARNESS.md + scenarios + templates alone |
 | `app/` | **disposable** | the generated implementation; safe to delete at any time |
 

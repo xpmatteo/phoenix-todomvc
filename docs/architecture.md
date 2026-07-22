@@ -20,6 +20,9 @@ reversed, mark it superseded and say why.
 - **NFR-4 Changeability of business logic.** The business logic must be easy to
   understand and change in isolation from the technology it happens to be
   attached to.
+- **NFR-5 Ease of app evolution.** The app must be able to change — including
+  its data shape — without losing data. Schema changes are managed, repeatable,
+  and survive regeneration: user data outlives every implementation.
 
 ## Architecture decisions
 
@@ -69,6 +72,38 @@ mistake can ever expose them to the web; access control is the filesystem.
 The contract is canonical in `evals/HARNESS.md`.
 *Enforcement:* planned static check — no HTTP handler may reach the side-channel
 code path; review. (2026-07-22)
+
+### AD-6 Schema migrations with goose, embedded, applied at startup (NFR-5, NFR-1)
+
+Schema changes are managed with `pressly/goose` used as a *library*: plain SQL
+migration files with `-- +goose Up` / `-- +goose Down` annotations, embedded into
+the binary, applied automatically at startup. No separate migrate step exists
+(NFR-1). The SQLite driver is the pure-Go `modernc.org/sqlite`, keeping the single
+build free of cgo and a C toolchain.
+*Rejected:* Atlas/Liquibase-style declarative systems (conceptual mass, commercial
+gravity — against NFR-3's simplicity license); a hand-rolled `PRAGMA user_version`
+loop (Captain Matt's call: a real system, not a mechanism).
+*Consequences:* the dependency allowlist (AD-3) is exactly: `pressly/goose`,
+`modernc.org/sqlite`.
+*Enforcement:* the AD-3 allowlist check; the harness fails if the app cannot start
+against an existing database. (2026-07-22)
+
+### AD-7 The schema is a durable asset, outside `app/` (NFR-5)
+
+The database file survives regeneration — data is the one thing a phoenix cannot
+burn. Therefore the migration chain is provenance for data and lives on the
+durable side: `schema/` at the repository root, append-only. A regenerated
+implementation may **append** migrations (reviewed like any durable-artifact
+change) but never rewrites, reorders, or deletes existing ones, and must apply
+exactly this chain at startup.
+So that the disposable app packages can embed and import the durable schema, the
+repository is a single Go module rooted at the repo root; `evals/runner/` stays
+its own module (it must not share the app's dependency graph).
+*Consequences:* the persisted storage format is now contractual, resolving the
+coverage audit's open question #3 — the eval side channel's seed/read commands
+must read and write this schema, and can be reviewed against it.
+*Enforcement:* append-only is checked by provenance (git history of `schema/`);
+review of any appended migration. (2026-07-22)
 
 ## Artifact constraints
 

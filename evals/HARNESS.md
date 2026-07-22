@@ -78,7 +78,8 @@ isolation is entirely the `seed` command's replace-everything semantics.
 ## Trust boundary
 
 The adapter is generated together with the app, so the harness verifies the app
-against the *model semantics* (what todos exist, in what state and order), not
-against any particular storage schema. Whether the raw persisted format itself is
-part of the contract is deliberately out of scope here — see the coverage audit;
-if it ever becomes contractual, the enforcement must live outside `app/`.
+against the *model semantics* (what todos exist, in what state and order). The
+storage format itself IS contractual — the durable, append-only schema in
+`schema/` (AD-7) — but the harness does not verify it; the adapter commands are
+reviewed against that schema instead, and a divergence surfaces as scenario
+failures the moment adapter and app disagree.
