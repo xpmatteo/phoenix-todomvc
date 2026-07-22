@@ -40,7 +40,7 @@ and followed by an indented block (4 spaces):
 | Section | Required | Meaning |
 |---|---|---|
 | `GIVEN model:` | yes | model seeded before the app loads |
-| `GIVEN route:` | no | initial URL hash, e.g. `#/active` (default: none) |
+| `GIVEN route:` | no | initial URL hash, written inline on the keyword line itself, e.g. `GIVEN route: #/active` (default: none) |
 | `WHEN:` | no | user actions, one per line, executed in order |
 | `THEN page:` | no* | expected page projection after the last action |
 | `THEN model:` | no* | expected model after the last action |
