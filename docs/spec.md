@@ -24,6 +24,8 @@ This checkbox toggles all the todos to the same state as itself. Make sure to cl
 
 ### Item
 
+Each todo item's `<li>` element carries a `data-id` attribute equal to the item's persisted `id`.
+
 A todo item has three possible interactions:
 
 1. Clicking the checkbox marks the todo as complete by updating its `completed` value and toggling the class `completed` on its parent `<li>`
@@ -46,7 +48,7 @@ Removes completed todos when clicked. Should be hidden when there are no complet
 
 ### Persistence
 
-Your app should dynamically persist the todos, immediately after every interaction. Use the keys `id`, `title`, `completed` for each item. Editing mode should not be persisted.
+Your app should dynamically persist the todos, immediately after every interaction. Use the keys `id`, `title`, `completed` for each item. Each item's `id` is an opaque non-empty string, assigned when the todo is created and never changed afterwards (editing a todo's title must not change its `id`). The app must accept any non-empty string as an id in previously persisted data. Editing mode should not be persisted.
 
 ### Routing
 
