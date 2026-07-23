@@ -5,6 +5,8 @@ the evaluations are the durable artifacts; the implementation is disposable and 
 regenerated from them when they change. Background: `docs/principles.md`, distilled 
 from Chad Fowler's [The Phoenix Architecture blog](https://aicoding.leaflet.pub/).
 
+Current status and what's next: `ROADMAP.md`.
+
 ## Layout: durable vs disposable
 
 | Path | Status | What it is |
