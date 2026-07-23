@@ -1,7 +1,8 @@
 # Eval Harness Contract
 
-Status: **durable artifact**. Defines the boundary between the test runner and each
-generated implementation of the app. `DSL.md` defines *what* the scenarios mean;
+Status: **durable artifact**. This document is the contract every generated app
+must satisfy so a single, unchanging test runner can drive it — start it, seed it,
+and read its state back. `DSL.md` defines *what* the scenarios mean;
 this document defines *how* a runner gets any implementation running, seeded, and
 read back. A fresh agent must be able to build the runner from this document plus
 `DSL.md`, the scenario files, and the two template files — nothing else.
@@ -19,14 +20,25 @@ read back. A fresh agent must be able to build the runner from this document plu
   with it: the `harness.json` manifest and the executables it names. The only
   place that knows how the app is built, served, and persisted.
 
-The DOM vocabulary the runner needs (element classes, structure, the `data-id`
-attribute) is defined by `spec/main-screen-template.html` and
-`spec/main-screen-template.css`, which are part of the durable contract. Visibility
-of an element means rendered visibility (computed style), not mere DOM presence.
+The runner reads the page using a fixed DOM vocabulary: element classes, page
+structure, and the `data-id` attribute. Two files define it:
+`spec/main-screen-template.html` and `spec/main-screen-template.css`. Both are part
+of the durable contract.
+
+When a scenario asks whether an element is visible, that means rendered visibility —
+its computed style. An element that is present in the DOM but hidden does not count
+as visible.
 
 ## What every implementation must provide
 
-A manifest at `app/harness.json`:
+A test needs two things the web page cannot give the runner on its own: a way to
+put the app into a known starting state *before* the test runs, and a way to see
+the resulting state *after* the test has acted. `seed` does the first — it writes
+the scenario's `GIVEN model:` into storage. `read` does the second — it reports
+what the app persisted, so a `THEN model:` check can compare. `start` and `url`
+just get the app running.
+
+Each implementation declares these commands in a manifest at `app/harness.json`:
 
     {
       "start": "go run ./cmd/todomvc",
@@ -34,6 +46,10 @@ A manifest at `app/harness.json`:
       "seed": "go run ./cmd/evalctl seed",
       "read": "go run ./cmd/evalctl read"
     }
+
+The values above are only an example — this one happens to be a Go app. The
+contract mandates the four keys and what each command must do; each implementation
+supplies its own values, in whatever technology it chooses.
 
 All commands are executed with `app/` as the working directory.
 
@@ -51,11 +67,15 @@ All commands are executed with `app/` as the working directory.
 
 ### Side-channel requirement
 
-`seed` and `read` are a **local side channel**: they must access the storage
-directly (e.g. opening the SQLite database file), never through a network
-listener of any kind. The app must not expose any way to reach this
-functionality over the web — the point is that no configuration mistake can
-ever make it web-accessible. Access control is the filesystem, nothing else.
+`seed` and `read` are a **local side channel**. They reach the app's stored state
+directly — for example by opening its SQLite file, or by connecting to whatever
+database it uses — not through the app's own web interface.
+
+The rule this protects: the app must expose no web route, or any other public
+endpoint, that can seed or read the model. That way no configuration mistake can
+ever make this functionality reachable over the web. To run these commands you need
+local access to the host where the app and its storage live — never just an HTTP
+request to the app.
 
 ## Execution semantics, per scenario
 
@@ -77,9 +97,11 @@ isolation is entirely the `seed` command's replace-everything semantics.
 
 ## Trust boundary
 
-The adapter is generated together with the app, so the harness verifies the app
-against the *model semantics* (what todos exist, in what state and order). The
-storage format itself IS contractual — the durable, append-only schema in
-`schema/` (AD-7) — but the harness does not verify it; the adapter commands are
-reviewed against that schema instead, and a divergence surfaces as scenario
-failures the moment adapter and app disagree.
+The adapter is generated together with the app, not independently. So the harness
+checks the app at the level of *model semantics*: which todos exist, in what state,
+and in what order.
+
+The storage format is also part of the contract — the durable, append-only schema
+in `schema/` (AD-7). The harness does not check it directly. Instead, a human
+reviews the adapter commands against that schema. And if the adapter and the app
+ever disagree, scenarios start to fail — so the problem surfaces on its own.
