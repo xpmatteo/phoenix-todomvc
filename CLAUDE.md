@@ -13,6 +13,19 @@ Hard rules:
 - When docs prove ambiguous during a build, record the gap explicitly (and fix
   the doc) rather than silently choosing.
 - Commit messages record *why* — the reason for the change, not a diff summary.
+- We practise trunk-based development. Commit straight to `main`. Only work in
+  a branch or worktree when the user asks for one.
+
+# Delegating to subagents
+
+Pick the cheapest model that will do the job well. A subagent on a mechanical
+task does not need the model you would choose for the hardest design problem in
+the repo. Use your judgement, and prefer a smaller model when the task is
+well-specified.
+
+**Never delegate to Fable.** It costs roughly twice Opus per token, and a
+single Fable subagent has cost more than a whole session of ordinary work.
+Use Opus or below for delegated work.
 
 # Prose style
 
