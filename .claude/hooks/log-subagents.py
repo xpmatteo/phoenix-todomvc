@@ -13,9 +13,14 @@ written as "unknown" and backfilled on a later run.
 import fcntl
 import json
 import os
+import subprocess
 import sys
+import tempfile
 from datetime import datetime
 from pathlib import Path
+
+# Seconds to allow a single credential scan before giving up on it.
+SCAN_TIMEOUT_SEC = 15
 
 # Where Claude Code keeps its transcripts. Only used to locate the subagent
 # transcripts we read; nothing is written here.
@@ -80,6 +85,53 @@ def price_for(model):
         if model.startswith(name) and (best is None or len(name) > len(best[0])):
             best = (name, rates)
     return best[1] if best else None
+
+
+def redact(text):
+    """Replace recognisable credentials in text before it is written.
+
+    Returns (text, status). Status is "clean" if nothing was found,
+    "redacted" if something was replaced, or "unavailable" if the scan could
+    not run — recorded explicitly so unscanned text is never mistaken for
+    scanned text.
+
+    Detection is delegated to gitleaks so it stays in step with the
+    pre-commit gate. It matches credentials by shape; a password written in
+    prose has no shape to match and will not be caught.
+    """
+    if not text:
+        return text, "clean"
+
+    handle, report = tempfile.mkstemp(prefix="subagent-scan-", suffix=".json")
+    os.close(handle)
+    try:
+        subprocess.run(
+            ["gitleaks", "stdin", "--report-format", "json",
+             "--report-path", report, "--no-banner"],
+            input=text.encode(), stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL, timeout=SCAN_TIMEOUT_SEC, check=False,
+        )
+        with open(report) as f:
+            findings = json.load(f)
+    except FileNotFoundError:
+        return text, "unavailable"  # gitleaks not installed
+    except Exception:
+        return text, "unavailable"
+    finally:
+        try:
+            os.unlink(report)
+        except OSError:
+            pass
+
+    if not findings:
+        return text, "clean"
+
+    # Longest first, so a secret contained within another is not half-replaced.
+    for finding in sorted(findings, key=lambda f: len(f.get("Secret") or ""), reverse=True):
+        secret = finding.get("Secret")
+        if secret:
+            text = text.replace(secret, f"[REDACTED:{finding.get('RuleID', 'secret')}]")
+    return text, "redacted"
 
 
 def read_jsonl(path):
@@ -238,6 +290,16 @@ def summarize(agent_id, meta, agent_rows, tasks, results, session_id, cwd,
         if first_user:
             prompt = text_of((first_user.get("message") or {}).get("content"))
 
+    error_text = text_of(result.get("content"))[:2000] if outcome == "error" else None
+
+    # Scrub before anything reaches disk, so a pasted credential never lands
+    # in the log at all.
+    prompt, prompt_status = redact(prompt)
+    error_text, error_status = redact(error_text)
+    redaction = "unavailable" if "unavailable" in (prompt_status, error_status) else (
+        "redacted" if "redacted" in (prompt_status, error_status) else "clean"
+    )
+
     record = {
         "agent_id": agent_id,
         "session_id": session_id,
@@ -260,10 +322,11 @@ def summarize(agent_id, meta, agent_rows, tasks, results, session_id, cwd,
         "tokens": tokens,
         "cost_usd": cost,
         "outcome": outcome,
+        "redaction": redaction,
         "prompt": prompt,
     }
-    if outcome == "error":
-        record["error"] = text_of(result.get("content"))[:2000]
+    if error_text is not None:
+        record["error"] = error_text
     return record
 
 
@@ -361,8 +424,19 @@ def main():
         encoded = str(cwd or "").replace("/", "-")
         parent = CONFIG_DIR / "projects" / encoded / f"{session_id}.jsonl"
 
-    session_dir = parent.parent / session_id
-    merge(collect(session_dir, session_id, cwd, read_jsonl(parent)))
+    # Scan every session in this project, not just the current one. The log is
+    # derived data: rebuilding it from all transcripts means a deleted or
+    # truncated log heals itself instead of silently losing history.
+    project_dir = parent.parent
+    records = []
+    for session_dir in sorted(p for p in project_dir.iterdir() if p.is_dir()):
+        if not (session_dir / "subagents").is_dir():
+            continue  # most sessions spawned no agents; skip the transcript read
+        sid = session_dir.name
+        records.extend(collect(
+            session_dir, sid, cwd, read_jsonl(project_dir / f"{sid}.jsonl"),
+        ))
+    merge(records)
     return 0
 
 
