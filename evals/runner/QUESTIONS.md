@@ -116,13 +116,18 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
 
 ## 9. Editing-mode line when the app buggily also shows the normal controls
 
-- **RESOLVED (DSL.md § Page projection):** the `[edit: value]` bullet now states it is
-  compositional with the normal item line — edit field visible → edit line, any view
-  control visible → normal line, both visible → two lines and the diff exposes the bug.
-  A rule-of-thumb was added distinguishing declared-state markers (read the class) from
-  visibility assertions (read computed style), so #6/#9 read as one coherent policy.
-  Also, per Matt: all item rules are scoped to `<li>` within `ul.todo-list`, so they
-  will not trigger on controls the UI grows elsewhere later.
+- **RESOLVED (DSL.md § Page projection) — reversed by the projection rework:** editing is
+  now read from the `editing` class on the `<li>`, not from the edit field's rendered
+  visibility. A row with `editing` projects the single `[edit: value]` line and no view
+  line; a row without it projects the view line. This mirrors #6 (`~…~` reads the
+  `completed` class): the projection reads declared markers, never inferred rendered
+  styling, so it is a context-free function of the DOM (see the first follow-up below).
+  The trade: the projection no longer catches an app that sets `editing` yet force-shows
+  its view controls by other styling — it trusts the durable CSS to hide `.view` under
+  `editing`. That is deliberate; hiding a projected region by any styling other than
+  omission or `.hidden` is now a stated contract violation. The earlier resolution below
+  (compositional two-line rendering, "editing judged by rendered visibility") is
+  superseded. All item rules remain scoped to `<li>` within `ul.todo-list`, per Matt.
 - **Docs:** DSL.md: rendering `[edit: value]` "also asserts that the item's normal
   controls … are hidden while editing", but doesn't say what the projection of a
   violating page looks like (unlike the `[x]`/`~…~` case, where it explains the diff
@@ -248,11 +253,15 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
 
 ## Follow-ups (raised while addressing the above, to do after the list)
 
-- **Rework the projection description toward simple, context-free rules.** Each projected
-  line should follow from a local, unambiguous rule on the DOM, so the projection
-  implementation never has to guess. This requires the produced HTML to *cooperate* —
-  declaring the markers the projection reads (as `data-id`, `completed`, `selected`
-  already do) rather than making the projector infer state from rendered styling.
+- **DONE — Reworked the projection description toward simple, context-free rules**
+  (DSL.md § Page projection). Every projected line now follows from a local rule on a
+  declared marker — a class, attribute, `.value`, text, or presence — and the projection
+  never infers state from rendered styling. Region visibility is a declared marker too:
+  shown means present and without the `hidden` class (app hides by omission or `.hidden`).
+  Editing reads the `editing` class (#9, reversed); `~…~` reads `completed` (#6);
+  selection reads `selected` (#8); `data-id` (#7) was already declared. Computed-style
+  visibility now lives only in `THEN check:` (destroy-on-hover, focus), where no marker
+  can express the fact. Projected output strings are unchanged, so no scenario changed.
 - **Add acceptance tests for the projection itself.** Pin the DOM→projection mapping
   with fixed HTML fixtures and expected projection strings, so the projector is verified
   independently of any app.

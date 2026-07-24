@@ -25,9 +25,11 @@ structure, and the `data-id` attribute. Two files define it:
 `spec/main-screen-template.html` and `spec/main-screen-template.css`. Both are part
 of the durable contract.
 
-When a scenario asks whether an element is visible, that means rendered visibility —
-its computed style. An element that is present in the DOM but hidden does not count
-as visible.
+The page projection reads only declared markers — classes, attributes, values, text,
+and presence — never computed style (DSL.md § Page projection). Computed style enters
+only where a scenario asks directly whether an element is visible: the `THEN check:`
+visibility checks (the destroy button revealed on hover). There, visible means rendered
+visibility — an element present in the DOM but hidden does not count.
 
 ## What every implementation must provide
 

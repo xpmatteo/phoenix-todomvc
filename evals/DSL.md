@@ -104,83 +104,90 @@ named or not (see "Runner obligations").
 
 ## Page projection
 
-The projection renders, top to bottom, only the following. A part that the app hides
-(or does not render) produces **no line at all** — absence of a line asserts absence
-on the page.
+The projection is an ASCII rendering of the page, top to bottom. `THEN page:` compares
+it line by line; anything not projected is ignored.
 
-1. **Input row** — always first: the new-todo input rendered as `>` followed by its
-   current value in double quotes. The input is always present and visible (an always-on
-   invariant, see "Runner obligations"), so this line is never absent — the projection
-   describes only well-formed pages. The quotes delimit the value so it is compared
-   **verbatim** — whitespace inside them is significant, and an empty input is an
-   explicit `""`. When the main section is visible, the row is prefixed by the
-   mark-all-complete toggle — rendered as a chevron, mirroring the UI, where parens
-   mean "on" (the same convention as the selected filter):
+Every line follows from a **local rule on a declared marker** — a class, an attribute,
+an input's `.value`, an element's text, or an element's presence. The projection never
+infers state from rendered styling: no computed colors, strike-through, or visibility.
+Two reasons. Reading the durable CSS would test our own stylesheet instead of the app.
+And a marker rule is unambiguous, so the projector never guesses what the app meant.
+This puts one duty on the app: **declare state through the markers below**, the way the
+template already declares `data-id`, `completed`, and `selected`.
 
-       > ""            — main section hidden; empty input alone
-       > "buy mil"     — input containing text
-       v > ""          — toggle visible, unchecked, empty input
-       (v) > ""        — toggle visible, checked (i.e. all todos completed)
-       v > "buy mil"   — toggle and input text combined
+**Shown vs hidden.** The app hides a region by leaving it out of the DOM or giving it
+the `hidden` class (durable CSS: `.hidden { display: none }`). A region is **shown**
+when its element is present and carries no `hidden` class. The app must not hide a
+projected region by any other styling — the projection would still count it as shown.
+Genuinely visual facts no marker can express — the destroy button revealed on `:hover`,
+document focus — are not projected; assert them with `THEN check:`, which reads computed
+visibility (HARNESS.md).
 
-   The input value is quoted because it is a field's literal `.value` — whitespace is
-   exactly what the user typed and what would be submitted. Item titles below are *not*
-   quoted: they are rendered labels, whose textContent HTML rendering pads with layout
-   whitespace, so they are matched and projected on trimmed text. Quotes therefore mark
-   the difference — a precise literal compared exactly, versus rendered text trimmed.
+The lines, in order:
 
-2. **Todo items** — the `<li>` elements inside `ul.todo-list`, one line each, in
-   displayed order, only the items currently displayed (a filtered-out item produces no
-   line). Scoping every item rule to `ul.todo-list` keeps the projection from matching
-   checkboxes, labels, or list items the UI may grow elsewhere later:
+**1. Header row** — always first. It reads the new-todo input (`.new-todo`) and the
+mark-all toggle (`#toggle-all`):
 
-       [ ] title             — active item
-       #name [ ] title       — any item line may carry a leading #name; the rendered
-                               item's data-id must equal the id bound to that name
-                               (see "Todo identity")
-       [x] ~title~           — completed item: the checkbox is checked AND the item
-                               carries the `completed` class. `[x]` reflects the
-                               checkbox; `~…~` reflects the `completed` class the app
-                               puts on a completed item (which the durable CSS renders
-                               as strike-through — reading the class, not the computed
-                               style, keeps the assertion about the app's output rather
-                               than our own stylesheet). The two are separate app
-                               outputs, so a buggy app can produce one without the other
-                               and the diff will show it.
-       [edit: value]         — the row's edit field, when it is rendered visible,
-                               showing its current value. This line is compositional
-                               with the lines above, not a replacement for them: the
-                               normal item line ([ ]/[x]) appears whenever any view
-                               control (checkbox, label, destroy) is rendered visible.
-                               While editing, the spec requires the edit field shown and
-                               the view controls hidden, so a correct row yields exactly
-                               one line. A buggy app that shows both yields two lines for
-                               one row and the diff exposes it — same philosophy as
-                               `[x]`/`~…~`.
+    > "value"        — toggle hidden: input alone
+    v > "value"      — toggle shown, unchecked
+    (v) > "value"    — toggle shown, checked (every todo completed)
 
-   Note the two kinds of signal this projection reads. Declared state — completed,
-   selected — is read from the marker the app declares (its class), not the styling the
-   durable CSS derives from it. Visibility — is the edit field shown, are the view
-   controls hidden — is read as rendered visibility (computed style), because the
-   assertion is itself about what the user can see. Rule of thumb: **read the declared
-   marker when asserting declared state; read rendered visibility when the assertion is
-   about what is visible.**
+- `"value"` is the input's `.value`, verbatim, in double quotes. Whitespace inside the
+  quotes is significant; an empty value is `""`. It is quoted because it is a literal
+  field value the user could submit, compared exactly. (Item titles below are unquoted
+  rendered text, matched on trimmed text; the quotes mark that difference.)
+- The chevron prefix appears only when the mark-all toggle is shown — `(v)` when
+  `#toggle-all` is `checked`, `v` when it is not. Parens mean "on", the same convention
+  as the selected filter. The toggle is shown exactly when the main section is (both
+  live or vanish together), so the chevron's presence doubles as the "main section is
+  shown" signal.
 
-3. **Footer** — only when the footer is visible, as a single line:
+The header is always present — the spec keeps it visible in every state — so this line
+never disappears. If the app fails to render it, the runner fails loudly rather than
+projecting a placeholder (see "Runner obligations").
 
-       -- <counter> | <filters> | [Clear completed]
+**2. Todo items** — one line per shown `<li>` in `ul.todo-list`, in order. A filtered-out
+todo is not rendered, so it produces no `<li>` and no line. Scoping to `ul.todo-list`
+keeps these rules off any other list or checkbox the UI may grow later. Any item line may
+carry a leading `#name`, binding or asserting the row's `data-id` (see "Todo identity").
 
-   - `<counter>`: the counter text verbatim, with the emphasized number rendered
-     markdown-style: `**2** items left`. (This projects the `<strong>` wrapper
-     required by the spec.)
-   - `<filters>`: the filter links in order, the selected one in parentheses:
-     `(All) Active Completed`. "Selected" is read from the `selected` class on the
-     filter's `<a>` (the app's declared marker, per the template), not the rendered
-     border color the durable CSS gives it.
-   - ` | [Clear completed]` appears only when the Clear-completed button is visible.
+- **Editing row** — the `<li>` carries the `editing` class:
 
-Focus is deliberately **not** part of the projection (asserting it on every line would
-pin behavior the spec leaves open). Assert focus explicitly via `THEN check:`.
+      [edit: value]
+
+  `value` is the `.edit` field's `.value`. `editing` is the spec's declared marker for
+  edit mode, and the durable CSS hides the row's view controls under it. So an editing
+  row projects this one line and no view line — read from the class, not from which
+  controls happen to be visible.
+
+- **View row** — the `<li>` does not carry `editing`:
+
+      [ ] title        — the `.toggle` checkbox is unchecked
+      [x] title        — the `.toggle` checkbox is checked
+      [x] ~title~      — checked AND the `<li>` carries the `completed` class
+
+  `[x]` reads the checkbox's `checked`; `~…~` reads the `completed` class. They are two
+  independent app outputs, so a buggy app can produce one without the other and the diff
+  shows it. `title` is the label's text, trimmed. (The durable CSS renders `completed`
+  as strike-through; the projection reads the class, not the rendered line, so the
+  assertion stays about the app's output.)
+
+**3. Footer** — one line, only when the footer (`.footer`) is shown:
+
+    -- <counter> | <filters>
+    -- <counter> | <filters> | [Clear completed]
+
+- `<counter>`: the `.todo-count` text, with its `<strong>`-wrapped number rendered
+  `**n**`: `**2** items left`. (Projecting the `<strong>` pins the wrapper the spec
+  requires.)
+- `<filters>`: the three filter links in order, the one carrying the `selected` class in
+  parentheses: `(All) Active Completed`. Selection is read from the class, the app's
+  declared marker, not the rendered border color.
+- ` | [Clear completed]` appears only when the Clear-completed button (`.clear-completed`)
+  is shown.
+
+Focus is deliberately **not** projected — asserting it on every line would pin behavior
+the spec leaves open. Assert focus explicitly via `THEN check:`.
 
 ## Action vocabulary (`WHEN:`)
 

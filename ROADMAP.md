@@ -20,10 +20,10 @@ next milestone.
 | `spec/architecture.md` | stable | 5 NFRs, 7 ADs, each with named enforcement |
 | `spec/main-screen-template.{html,css}` | stable | UI contract |
 | `schema/` | stable | initial migration only (`001_create_todos.sql`) |
-| `evals/DSL.md` | revised | dogfood run 1 gap-log folded in (18/18) |
+| `evals/DSL.md` | revised | 18/18 gaps folded in; § Page projection reworked to marker-only, context-free rules |
 | `evals/HARNESS.md` | revised | § Settling added; readiness pinned; seed/read contract still to tighten |
 | `evals/scenarios/` | stable | 8 files, 35 scenarios; full behavioral coverage |
-| `evals/runner/` | built, unvalidated E2E | dogfood run 1 done; write-action semantics untested until an app exists |
+| `evals/runner/` | built, now stale | predates the projection rework (reads quoting/strike/editing the old way); regenerate against current DSL |
 | `docs/principles.md` | stable | distilled theory |
 | `docs/handbook.md` | living | practice learnings |
 
@@ -31,9 +31,6 @@ next milestone.
 
 ### 1. Finish tightening the eval docs (dogfood run 1 fold-back, remaining threads)
 The 18 gaps are folded in (see § Done). Still open:
-- **Projection rework** — restate the § Page projection as simple, context-free rules,
-  one local rule per line, with the produced HTML cooperating (declaring the markers the
-  projection reads) so the projector never guesses.
 - **Projection acceptance tests** — pin the DOM→projection mapping with fixed HTML
   fixtures and expected projection strings, so the projector is verified without an app.
 - **Prose-style pass** — `handbook.md` and `spec.md` done; still to sweep
@@ -91,3 +88,8 @@ The 18 gaps are folded in (see § Done). Still open:
   visibility by rule; always-on structural invariants made unconditional.
 - Prose-style pass over `handbook.md` and `spec.md`; added a "no grand flourishes"
   rule to the style guide (state findings plainly, no closing epigrams).
+- Reworked DSL.md § Page projection to context-free, marker-only rules: every line reads
+  a declared marker (class, attribute, `.value`, text, presence), never inferred styling.
+  Region visibility is declared (shown = present and no `hidden` class); editing reads the
+  `editing` class (QUESTIONS #9 reversed). Output strings unchanged, so no scenario moved;
+  computed-style visibility now lives only in `THEN check:`.
