@@ -35,6 +35,8 @@ Use simple, practical, no-nonsense language. These docs are read by fresh agents
 and humans who need to act on them, often under time pressure. Write for that
 reader.
 
+- Use no more words than the point needs. Cut every word that carries no
+  meaning. A shorter sentence that says the same thing is always better.
 - One idea per sentence. If a sentence has two em-dashes and a semicolon, it is
   probably three sentences.
 - Concrete over abstract. Name the actor and the action ("the runner starts the
