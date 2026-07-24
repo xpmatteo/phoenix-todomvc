@@ -10,7 +10,7 @@ GIVEN model:
 
 THEN page:
 
-    (v) >
+    (v) > ""
     [x] ~buy milk~
     -- **0** items left | (All) Active Completed | [Clear completed]
 
@@ -26,7 +26,7 @@ GIVEN model:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     -- **1** item left | (All) Active Completed
 
@@ -39,7 +39,7 @@ GIVEN model:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     [ ] walk the dog
     -- **2** items left | (All) Active Completed
@@ -54,7 +54,7 @@ GIVEN model:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     [x] ~walk the dog~
     [ ] feed the cat
@@ -73,7 +73,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [x] ~buy milk~
     [ ] walk the dog
     -- **1** item left | (All) Active Completed | [Clear completed]

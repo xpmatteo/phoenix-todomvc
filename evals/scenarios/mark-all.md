@@ -16,7 +16,7 @@ WHEN:
 
 THEN page:
 
-    (v) >
+    (v) > ""
     [x] ~buy milk~
     [x] ~walk the dog~
     [x] ~feed the cat~
@@ -45,7 +45,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     [ ] walk the dog
     -- **2** items left | (All) Active Completed
@@ -68,7 +68,7 @@ WHEN:
 
 THEN page:
 
-    (v) >
+    (v) > ""
     [x] ~buy milk~
     [x] ~walk the dog~
     -- **0** items left | (All) Active Completed | [Clear completed]
@@ -86,7 +86,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     [x] ~walk the dog~
     -- **1** item left | (All) Active Completed | [Clear completed]
@@ -105,7 +105,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] walk the dog
     -- **1** item left | (All) Active Completed
 

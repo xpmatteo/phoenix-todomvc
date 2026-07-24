@@ -15,7 +15,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [edit: buy milk]
     [ ] walk the dog
     -- **2** items left | (All) Active Completed
@@ -49,7 +49,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy oat milk
     [ ] walk the dog
     -- **2** items left | (All) Active Completed
@@ -130,7 +130,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] walk the dog
     -- **1** item left | (All) Active Completed
 
@@ -154,7 +154,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     [ ] walk the dog
     -- **2** items left | (All) Active Completed

@@ -18,7 +18,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     -- **1** item left | (All) Active Completed
 
@@ -42,7 +42,7 @@ WHEN:
 
 THEN page:
 
-    >
+    > ""
 
 THEN model:
 

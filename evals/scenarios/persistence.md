@@ -20,7 +20,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     [x] ~walk the dog~
     -- **1** item left | (All) Active Completed | [Clear completed]
@@ -44,7 +44,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     -- **1** item left | (All) Active Completed
 
@@ -67,7 +67,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     -- **1** item left | (All) Active Completed
 

@@ -10,7 +10,7 @@ GIVEN model:
 
 THEN page:
 
-    >
+    > ""
 
 THEN check:
 
@@ -32,7 +32,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     [ ] walk the dog
     -- **2** items left | (All) Active Completed

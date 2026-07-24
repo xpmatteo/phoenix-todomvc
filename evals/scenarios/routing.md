@@ -16,7 +16,7 @@ GIVEN route: /active
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     -- **1** item left | All (Active) Completed | [Clear completed]
 
@@ -34,7 +34,7 @@ GIVEN route: /completed
 
 THEN page:
 
-    v >
+    v > ""
     [x] ~walk the dog~
     -- **1** item left | All Active (Completed) | [Clear completed]
 
@@ -51,7 +51,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     -- **1** item left | All (Active) Completed | [Clear completed]
 
@@ -70,7 +70,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] walk the dog
     -- **1** item left | All (Active) Completed | [Clear completed]
 
@@ -96,6 +96,6 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [x] ~walk the dog~
     -- **1** item left | All Active (Completed) | [Clear completed]

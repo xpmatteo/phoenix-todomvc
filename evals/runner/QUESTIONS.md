@@ -7,13 +7,17 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
 ## 1. Who assigns ids omitted in `GIVEN model:` — DSL and HARNESS disagree
 
 - **Needed:** ids for seeded todos whose model line carries no `#id`.
-- **Docs:** DSL.md § Model notation says "when omitted, the **adapter** assigns a unique
+- **Docs:** DSL.md § Model notation said "when omitted, the **adapter** assigns a unique
   opaque id". HARNESS.md § seed says the seed payload is `{id, title, completed}` objects
   and "ids are stored **verbatim**" — the seed channel has no way to express an absent id,
   so the adapter never gets the chance to assign one.
-- **Chose:** the runner generates a unique opaque id (`gen-xxxxxxxx`) for each id-less
-  line and passes it to `seed`. Satisfies HARNESS.md literally; DSL.md's "the adapter
-  assigns" should probably be reworded to "the runner assigns".
+- **Chose:** the runner generates a unique opaque id for each line and passes it to
+  `seed`. Satisfies HARNESS.md literally.
+- **RESOLVED (DSL.md § Todo identity):** the disagreement was a symptom of a deeper
+  confusion — the notation treated `#id` as a *stored value*. It is now defined as a
+  *symbolic label* for an auto-generated id. Ids are always generated (runner at seed,
+  app on create); a `#name` only binds an id so a scenario can refer to it later. There
+  is no "adapter assigns" path left to reconcile.
 
 ## 2. NOTE lines actually span multiple lines
 
@@ -24,6 +28,8 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
   scenario, `routing.md`).
 - **Chose:** `NOTE:` opens a comment that swallows following non-blank lines until a
   blank line.
+- **RESOLVED (DSL.md § Scenario files):** the NOTE rule now states the comment spans the
+  `NOTE:` line plus continuation lines, ending at the next blank line.
 
 ## 3. Prose outside sections (file preambles)
 
@@ -34,6 +40,9 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
 - **Chose:** everything before the first `## ` heading is ignored. *Inside* a scenario,
   an unindented line that is neither a keyword nor a `NOTE:` is a parse error (strict, so
   typos in keyword lines can't be silently skipped).
+- **RESOLVED (DSL.md § Scenario files):** preamble prose before the first `## ` is now
+  documented as ignored, and the in-scenario grammar is stated as line-oriented and
+  closed — an unrecognized unindented line is a parse error.
 
 ## 4. No synchronization/timing model anywhere
 
@@ -48,6 +57,10 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
   (`type`, `press`, `clear`) additionally wait up to 1s for *something* to be focused,
   because autofocus/app focus can land after the load event ("type into the currently
   focused element" is otherwise a race on page load).
+- **RESOLVED (HARNESS.md § Settling):** the contract now states `THEN` is eventually
+  consistent — the runner polls to a bounded deadline, and the app must reach its final
+  observable state within that bound after an action with no further input. The exact
+  constants (100ms, 1s focus wait, 3s deadline) stay runner details, as chosen here.
 
 ## 5. Input-row rendering when toggle and text are both present
 
@@ -56,6 +69,11 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
 - **Chose:** compositional: `v > buy mil` / `(v) > buy mil`; a `>` with empty value has
   no trailing space. Trailing whitespace is trimmed from all actual projection lines,
   because markdown scenario files cannot reliably carry trailing spaces in expected lines.
+- **RESOLVED (DSL.md § Page projection):** the input value is now quoted — `> "buy mil"`,
+  empty is `> ""`, combined is `v > "buy mil"` — and compared verbatim. This makes the
+  combined case explicit and replaces the fragile trailing-space trim for the input row:
+  quoted values compare exactly, only unquoted rendered text (titles, counter, filters)
+  is trimmed. All ~29 input-row lines in the scenarios were updated to the quoted form.
 
 ## 6. What "styled as completed" means concretely
 
@@ -66,6 +84,12 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
 - **Chose:** computed `text-decoration-line` containing `line-through` on the item's
   label (a genuinely *rendered* signal, in the spirit of HARNESS.md's "rendered
   visibility"), rather than the presence of the `completed` class.
+- **RESOLVED (DSL.md § Page projection) — reversed:** `~…~` now reads the `completed`
+  class, not the computed strike-through. The template (line 21) makes setting that
+  class the app's responsibility; the strike-through is downstream of the durable CSS,
+  which the app does not regenerate, so reading the computed style would re-test our own
+  stylesheet rather than the app's output. Independence from `[x]` (the checkbox's
+  `checked`) is preserved. The runner must be updated to read the class.
 
 ## 7. Which element carries `data-id`
 
@@ -74,6 +98,9 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
 - **Chose:** the `<li>` in `.todo-list` ("the rendered row's data-id", per the note in
   `item.md`). A row without the attribute renders without a `#id` prefix and fails the
   always-on integrity check.
+- **RESOLVED (template + DSL.md § Concepts):** the template `<li>`s now carry `data-id`
+  with an explanatory comment, so the DOM vocabulary is shown where the contract says it
+  lives; DSL.md names the carrier as "the item's `<li>` in `.todo-list`".
 
 ## 8. "Selected" filter signal
 
@@ -82,9 +109,20 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
 - **Chose:** the `selected` class on the `<a>`. (DOM-presence rather than
   rendered-style — the one place this projection trusts a class name directly, same as
   every TodoMVC implementation does.)
+- **RESOLVED (DSL.md § Page projection):** stated — "selected" is read from the
+  `selected` class on the filter's `<a>`, the app's declared marker, not the rendered
+  border color. Consistent with `~…~` (#6) and `data-id` (#7): the projection reads the
+  markers the HTML declares, and reserves computed-style reads for genuine visibility.
 
 ## 9. Editing-mode line when the app buggily also shows the normal controls
 
+- **RESOLVED (DSL.md § Page projection):** the `[edit: value]` bullet now states it is
+  compositional with the normal item line — edit field visible → edit line, any view
+  control visible → normal line, both visible → two lines and the diff exposes the bug.
+  A rule-of-thumb was added distinguishing declared-state markers (read the class) from
+  visibility assertions (read computed style), so #6/#9 read as one coherent policy.
+  Also, per Matt: all item rules are scoped to `<li>` within `ul.todo-list`, so they
+  will not trigger on controls the UI grows elsewhere later.
 - **Docs:** DSL.md: rendering `[edit: value]` "also asserts that the item's normal
   controls … are hidden while editing", but doesn't say what the projection of a
   violating page looks like (unlike the `[x]`/`~…~` case, where it explains the diff
@@ -103,6 +141,14 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
 - **Chose:** each segment appears only if present/visible: no visible filter links →
   no filters segment; missing/hidden new-todo input projects a sentinel line
   `(no new-todo input)` so the diff fails loudly instead of faking `>`.
+- **RESOLVED:** two parts. (a) *Filters no longer optional* — Matt removed the template's
+  "remove if you don't implement routing" comment; routing is mandatory, so when the
+  footer is visible both counter and filters are always present and only `| [Clear
+  completed]` stays conditional. No doc change needed; the format was already right.
+  (b) *Missing input* — went with an always-on integrity check (DSL.md § Runner
+  obligations) instead of the sentinel: the new-todo input must exist and be visible
+  after every scenario. The projection grammar now describes only well-formed pages, and
+  the sentinel line is dropped.
 
 ## 11. `click "Clear completed"` scope
 
@@ -110,6 +156,8 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
   be misread as a generic `click "<text>"`.
 - **Chose:** closed set taken literally — only the exact string `click "Clear completed"`
   parses; any other `click "…"` is a parse error.
+- **RESOLVED (DSL.md action table):** the row now says it is a fixed verb whose quotes are
+  literal, not a generic click-by-text parameter.
 
 ## 12. `click toggle-all` target
 
@@ -118,6 +166,9 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
   `<label>` (the chevron).
 - **Chose:** click the label associated with `.toggle-all` (via `for=` or sibling), which
   is what a real user does and toggles the checkbox natively.
+- **RESOLVED (DSL.md action table):** the verb now targets the visible mark-all control
+  (its `<label>`/chevron), noting the checkbox itself is rendered invisible and the click
+  must toggle it.
 
 ## 13. Exact title matching vs. real-world whitespace
 
@@ -126,6 +177,10 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
 - **Chose:** `label.textContent.trim()` for both matching and projection. Titles with
   *internal* runs of whitespace are preserved exactly. Same trim applied to the counter
   text and filter link names.
+- **RESOLVED (DSL.md action vocabulary):** the `"title"`-matching line no longer says
+  "exact" — it now states matching is on trimmed text (leading/trailing ignored, internal
+  preserved), applied wherever the projection reads rendered text. Consistent with the
+  quoted-vs-unquoted rule from #5.
 
 ## 14. Matching a todo that is in editing mode
 
@@ -134,6 +189,9 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
   `focus is in the edit field of "title"` right after `dblclick`.
 - **Chose:** the row must be displayed; the label's textContent is used for matching even
   while hidden.
+- **RESOLVED (DSL.md action vocabulary):** stated — identity is keyed on the displayed
+  row, using the label text even when the label is hidden (as during editing), so
+  `dblclick` then `focus is in the edit field of "title"` resolves.
 
 ## 15. "Fresh browser context" mechanism
 
@@ -141,12 +199,18 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
   doesn't say how isolated the context must be.
 - **Chose:** a fresh headless Chrome process with a fresh temporary user-data-dir per
   scenario (strongest isolation; ~0.5s/scenario overhead).
+- **RESOLVED — no doc change:** not a contract question. HARNESS.md already states the
+  requirement (no client-side state survives between scenarios); *how strongly* the
+  runner isolates is a rebuildable-runner detail, deliberately left out of the durable
+  contract.
 
 ## 16. Readiness poll target
 
 - **Docs:** HARNESS.md: poll `url` until HTTP 200. Unstated: method, redirects.
 - **Chose:** GET on the manifest `url` exactly, following Go's default redirect policy;
   any 200 counts.
+- **RESOLVED (HARNESS.md `start`):** readiness is now defined as "a GET to `url` returns
+  200, following redirects"; poll interval and backoff stated as runner details.
 
 ## 17. Scope of the always-on id invariant
 
@@ -159,6 +223,13 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
   equals the id of the persisted item with the same title (a displayed row with no
   persisted counterpart, or no data-id attribute, is also a failure). A JSON id that is
   not a string (e.g. a number) is rejected when decoding the read output.
+- **RESOLVED (DSL.md § Runner obligations):** the id integrity check moved out of the
+  `THEN model:` comparison bullet into the always-on invariants bullet, now explicitly
+  unconditional — it runs after every scenario, including ones with only `THEN check:`,
+  and the runner reads the model even when no `THEN model:` asked it to. The JSON id
+  *wire type* is deliberately left unpinned: "opaque non-empty string" lives in the DSL
+  abstract model; requiring the JSON encoding to be a string is a runner-decode detail,
+  not an app obligation.
 
 ## 18. `reload` semantics
 
@@ -167,3 +238,21 @@ from them alone. Each entry: what was needed, where the docs fell short, what wa
   current location (so the filter persists — which `routing.md` "The active filter is
   persisted across a reload" indeed expects).
 - **Chose:** browser reload of the current location (CDP Page.reload).
+- **RESOLVED (DSL.md action table):** the `reload` row now says "reload the browser's
+  current location (which may differ from `GIVEN route:` after a navigation)". The old
+  confusing parenthetical ("persisted state must survive; in-memory state need not") was
+  removed — it described the *application's* state, conflated the verb with its expected
+  effect, and is already covered precisely by spec § Persistence ("persist immediately
+  after every interaction", "Editing mode should not be persisted", "Reloading the page
+  keeps the current filter").
+
+## Follow-ups (raised while addressing the above, to do after the list)
+
+- **Rework the projection description toward simple, context-free rules.** Each projected
+  line should follow from a local, unambiguous rule on the DOM, so the projection
+  implementation never has to guess. This requires the produced HTML to *cooperate* —
+  declaring the markers the projection reads (as `data-id`, `completed`, `selected`
+  already do) rather than making the projector infer state from rendered styling.
+- **Add acceptance tests for the projection itself.** Pin the DOM→projection mapping
+  with fixed HTML fixtures and expected projection strings, so the projector is verified
+  independently of any app.

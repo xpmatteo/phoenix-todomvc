@@ -54,8 +54,10 @@ supplies its own values, in whatever technology it chooses.
 All commands are executed with `app/` as the working directory.
 
 - `start` — builds (if needed) and serves the app at `url` until the process is
-  killed. The runner starts it once per run, polls `url` until it responds with
-  HTTP 200 (timeout: 60s), and kills the process group when the run ends.
+  killed. The runner starts it once per run and polls for readiness (timeout: 60s):
+  ready means a GET to `url` returns HTTP 200, following redirects (so answering `/`
+  with a 302 to a landing page that returns 200 counts). The runner kills the process
+  group when the run ends. The poll interval and backoff are runner details.
 
 - `seed` — reads a model from stdin and **replaces the entire persisted state**
   with it. The model is a JSON array of `{id, title, completed}` objects, possibly
@@ -94,6 +96,27 @@ request to the app.
 
 The app process is started once for the whole run, not per scenario; per-scenario
 isolation is entirely the `seed` command's replace-everything semantics.
+
+### Settling: `THEN` is eventually consistent
+
+An action may not finish the instant it is dispatched — a click can trigger a
+full-page navigation, and the spec requires the app to persist after every
+interaction, which may complete asynchronously. So the runner must not sample the
+page or the model once, immediately after the last `WHEN` step, and judge it. It
+must treat every `THEN` as **eventually consistent**: re-evaluate the section until
+it holds, or until a bounded timeout expires, and only then report the last
+observation as the failure.
+
+This places one obligation on every implementation: after an action with no further
+input, the app must reach its final observable state — rendered page and persisted
+model — within that bound. An app that keeps changing what it shows, or that
+persists only after some longer delay, violates the contract.
+
+The bound and the poll interval are runner details, not contract: a rebuilt runner
+may choose its own constants (the current runner defaults to a 3s deadline per
+`THEN`, overridable with `-wait`). What is durable is the shape — poll to a
+deadline, never sample once — and the app-side guarantee that a bounded, no-further-
+input window is enough to settle.
 
 ## Trust boundary
 

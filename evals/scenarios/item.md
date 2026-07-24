@@ -16,7 +16,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     [ ] buy milk
     [ ] walk the dog
     -- **2** items left | (All) Active Completed
@@ -42,7 +42,7 @@ WHEN:
 
 THEN page:
 
-    v >
+    v > ""
     #b2 [ ] walk the dog
     -- **1** item left | (All) Active Completed
 
@@ -66,7 +66,7 @@ WHEN:
 
 THEN page:
 
-    >
+    > ""
 
 THEN model:
 
