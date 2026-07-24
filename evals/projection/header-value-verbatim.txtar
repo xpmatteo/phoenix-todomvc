@@ -1,0 +1,16 @@
+The new-todo input holds an unsubmitted value with leading, trailing, and
+internal whitespace. The header value is quoted and verbatim: every space is
+significant, nothing is trimmed. Contrast item titles, which are trimmed at the
+ends (see `item-title-trimmed.txtar`) — the quotes mark that difference.
+Pins: `.new-todo` `.value` read verbatim inside the quotes.
+
+-- dom.html --
+<section class="todoapp">
+	<header class="header">
+		<h1>todos</h1>
+		<input class="new-todo" placeholder="What needs to be done?" value="  buy   milk  ">
+	</header>
+</section>
+
+-- projection.txt --
+> "  buy   milk  "

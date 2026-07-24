@@ -1,0 +1,30 @@
+The main section and the footer are present in the DOM but each carries the
+`hidden` class, so both count as not shown: the chevron and the footer line
+vanish, exactly as when the elements are absent (compare `header-empty.txtar`).
+The whole page projects to a single line.
+Pins: shown = present AND no `hidden` class; the `hidden` class hides a region as
+completely as omitting it.
+
+-- dom.html --
+<section class="todoapp">
+	<header class="header">
+		<h1>todos</h1>
+		<input class="new-todo" placeholder="What needs to be done?">
+	</header>
+	<section class="main hidden">
+		<input id="toggle-all" class="toggle-all" type="checkbox">
+		<label for="toggle-all">Mark all as complete</label>
+		<ul class="todo-list"></ul>
+	</section>
+	<footer class="footer hidden">
+		<span class="todo-count"><strong>0</strong> items left</span>
+		<ul class="filters">
+			<li><a class="selected" href="/">All</a></li>
+			<li><a href="/active">Active</a></li>
+			<li><a href="/completed">Completed</a></li>
+		</ul>
+	</footer>
+</section>
+
+-- projection.txt --
+> ""

@@ -1,0 +1,50 @@
+Main section shown, mark-all toggle checked (every todo completed). The chevron
+is present and parenthesised, so the header projects `(v) > ...`. The chevron
+reads `#toggle-all`'s checked attribute directly, not whether the todos happen to
+be completed.
+Pins: chevron shown + checked form.
+
+-- dom.html --
+<section class="todoapp">
+	<header class="header">
+		<h1>todos</h1>
+		<input class="new-todo" placeholder="What needs to be done?">
+	</header>
+	<section class="main">
+		<input id="toggle-all" class="toggle-all" type="checkbox" checked>
+		<label for="toggle-all">Mark all as complete</label>
+		<ul class="todo-list">
+			<li class="completed" data-id="t1">
+				<div class="view">
+					<input class="toggle" type="checkbox" checked>
+					<label>buy milk</label>
+					<button class="destroy"></button>
+				</div>
+				<input class="edit" value="buy milk">
+			</li>
+			<li class="completed" data-id="t2">
+				<div class="view">
+					<input class="toggle" type="checkbox" checked>
+					<label>walk the dog</label>
+					<button class="destroy"></button>
+				</div>
+				<input class="edit" value="walk the dog">
+			</li>
+		</ul>
+	</section>
+	<footer class="footer">
+		<span class="todo-count"><strong>0</strong> items left</span>
+		<ul class="filters">
+			<li><a class="selected" href="/">All</a></li>
+			<li><a href="/active">Active</a></li>
+			<li><a href="/completed">Completed</a></li>
+		</ul>
+		<button class="clear-completed">Clear completed</button>
+	</footer>
+</section>
+
+-- projection.txt --
+(v) > ""
+#t1 [x] ~buy milk~
+#t2 [x] ~walk the dog~
+-- **0** items left | (All) Active Completed | [Clear completed]

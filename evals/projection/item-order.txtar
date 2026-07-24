@@ -1,0 +1,58 @@
+Three todos in a mixed state. The projector emits one line per `<li>` in document
+order, and each line carries that row's own data-id — no reordering, no id
+swapping.
+Pins: one line per `<li>`, in order; each row keeps its own data-id.
+
+-- dom.html --
+<section class="todoapp">
+	<header class="header">
+		<h1>todos</h1>
+		<input class="new-todo" placeholder="What needs to be done?">
+	</header>
+	<section class="main">
+		<input id="toggle-all" class="toggle-all" type="checkbox">
+		<label for="toggle-all">Mark all as complete</label>
+		<ul class="todo-list">
+			<li data-id="t1">
+				<div class="view">
+					<input class="toggle" type="checkbox">
+					<label>buy milk</label>
+					<button class="destroy"></button>
+				</div>
+				<input class="edit" value="buy milk">
+			</li>
+			<li class="completed" data-id="t2">
+				<div class="view">
+					<input class="toggle" type="checkbox" checked>
+					<label>walk the dog</label>
+					<button class="destroy"></button>
+				</div>
+				<input class="edit" value="walk the dog">
+			</li>
+			<li data-id="t3">
+				<div class="view">
+					<input class="toggle" type="checkbox">
+					<label>feed the cat</label>
+					<button class="destroy"></button>
+				</div>
+				<input class="edit" value="feed the cat">
+			</li>
+		</ul>
+	</section>
+	<footer class="footer">
+		<span class="todo-count"><strong>2</strong> items left</span>
+		<ul class="filters">
+			<li><a class="selected" href="/">All</a></li>
+			<li><a href="/active">Active</a></li>
+			<li><a href="/completed">Completed</a></li>
+		</ul>
+		<button class="clear-completed">Clear completed</button>
+	</footer>
+</section>
+
+-- projection.txt --
+v > ""
+#t1 [ ] buy milk
+#t2 [x] ~walk the dog~
+#t3 [ ] feed the cat
+-- **2** items left | (All) Active Completed | [Clear completed]

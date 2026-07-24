@@ -1,0 +1,41 @@
+The Clear-completed button is present in the DOM but carries the `hidden` class,
+so it is not shown and the ` | [Clear completed]` segment is absent. This is how
+the app hides the button when no completed todo exists.
+Pins: the Clear-completed segment is read from `.clear-completed` shown-ness, and
+`hidden` counts as not shown.
+
+-- dom.html --
+<section class="todoapp">
+	<header class="header">
+		<h1>todos</h1>
+		<input class="new-todo" placeholder="What needs to be done?">
+	</header>
+	<section class="main">
+		<input id="toggle-all" class="toggle-all" type="checkbox">
+		<label for="toggle-all">Mark all as complete</label>
+		<ul class="todo-list">
+			<li data-id="t1">
+				<div class="view">
+					<input class="toggle" type="checkbox">
+					<label>buy milk</label>
+					<button class="destroy"></button>
+				</div>
+				<input class="edit" value="buy milk">
+			</li>
+		</ul>
+	</section>
+	<footer class="footer">
+		<span class="todo-count"><strong>1</strong> item left</span>
+		<ul class="filters">
+			<li><a class="selected" href="/">All</a></li>
+			<li><a href="/active">Active</a></li>
+			<li><a href="/completed">Completed</a></li>
+		</ul>
+		<button class="clear-completed hidden">Clear completed</button>
+	</footer>
+</section>
+
+-- projection.txt --
+v > ""
+#t1 [ ] buy milk
+-- **1** item left | (All) Active Completed

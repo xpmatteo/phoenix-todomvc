@@ -1,0 +1,41 @@
+The Completed filter is selected, so the app renders only the completed todo. The
+filter list projects `All Active (Completed)`. The counter still counts the one
+active todo the filter hides.
+Pins: Completed selected → `(Completed)`; only completed todos rendered; counter
+follows the model.
+
+-- dom.html --
+<section class="todoapp">
+	<header class="header">
+		<h1>todos</h1>
+		<input class="new-todo" placeholder="What needs to be done?">
+	</header>
+	<section class="main">
+		<input id="toggle-all" class="toggle-all" type="checkbox">
+		<label for="toggle-all">Mark all as complete</label>
+		<ul class="todo-list">
+			<li class="completed" data-id="t2">
+				<div class="view">
+					<input class="toggle" type="checkbox" checked>
+					<label>walk the dog</label>
+					<button class="destroy"></button>
+				</div>
+				<input class="edit" value="walk the dog">
+			</li>
+		</ul>
+	</section>
+	<footer class="footer">
+		<span class="todo-count"><strong>1</strong> item left</span>
+		<ul class="filters">
+			<li><a href="/">All</a></li>
+			<li><a href="/active">Active</a></li>
+			<li><a class="selected" href="/completed">Completed</a></li>
+		</ul>
+		<button class="clear-completed">Clear completed</button>
+	</footer>
+</section>
+
+-- projection.txt --
+v > ""
+#t2 [x] ~walk the dog~
+-- **1** item left | All Active (Completed) | [Clear completed]

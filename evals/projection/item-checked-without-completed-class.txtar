@@ -1,0 +1,35 @@
+Deliberately inconsistent DOM: the `.toggle` is checked but the `<li>` has no
+`completed` class. `[x]` reads the checkbox, `~…~` reads the class, and they are
+independent, so this projects `[x] buy milk` — the box, no strike marks. A real
+app would never render this, but a buggy one could, and the projection must show
+exactly one of the two markers.
+Pins: `[x]` and `~…~` are independent outputs.
+
+This fixture omits the footer to keep the case on the item line; each region
+projects on its own marker, so a shown main with no footer is a valid input.
+
+-- dom.html --
+<section class="todoapp">
+	<header class="header">
+		<h1>todos</h1>
+		<input class="new-todo" placeholder="What needs to be done?">
+	</header>
+	<section class="main">
+		<input id="toggle-all" class="toggle-all" type="checkbox">
+		<label for="toggle-all">Mark all as complete</label>
+		<ul class="todo-list">
+			<li data-id="t1">
+				<div class="view">
+					<input class="toggle" type="checkbox" checked>
+					<label>buy milk</label>
+					<button class="destroy"></button>
+				</div>
+				<input class="edit" value="buy milk">
+			</li>
+		</ul>
+	</section>
+</section>
+
+-- projection.txt --
+v > ""
+#t1 [x] buy milk

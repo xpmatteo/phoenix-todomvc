@@ -1,0 +1,15 @@
+Empty app. No todos, so the app omits the main section and the footer. With the
+main section gone the mark-all toggle is hidden, so the header projects as the
+input alone with an empty value.
+Pins: toggle-hidden form `> "value"`; no item lines; no footer line.
+
+-- dom.html --
+<section class="todoapp">
+	<header class="header">
+		<h1>todos</h1>
+		<input class="new-todo" placeholder="What needs to be done?">
+	</header>
+</section>
+
+-- projection.txt --
+> ""

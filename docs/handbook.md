@@ -117,6 +117,16 @@ wrong format and pass everything. We fixed it not by hardening the harness but b
 moving the schema to the durable side (AD-7). When a contract can't be enforced
 at a boundary, ask whether something is on the wrong side of it. (2026-07-22)
 
+**Give the projector its own spec-by-example.** The DOM→projection mapping is
+prose in `DSL.md`, and the projector that implements it lives in the disposable
+runner. Prose plus disposable code means the rules are remembered only where they
+are regenerated. So we pinned them the way scenarios pin the app: fixed HTML
+fragments paired with their exact projection, in `evals/projection/`. A rebuilt
+projector is now checked against them with no app running. The fixtures also earn
+coverage the scenarios can't: a `completed` class without a checked toggle proves
+the two markers are read independently — a state no correct app would render, so
+no scenario reaches it. (2026-07-24)
+
 ## Architecture
 
 **Derive decisions from upfront NFRs, and give every decision named

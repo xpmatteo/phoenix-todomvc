@@ -1,0 +1,33 @@
+The mirror of `item-checked-without-completed-class.txtar`. The `<li>` carries
+the `completed` class but the `.toggle` is unchecked, so this projects
+`[ ] ~buy milk~` — strike marks, empty box. Again a real app would not render
+this; the point is that the class and the checkbox are read independently.
+Pins: `[x]` and `~…~` are independent outputs.
+
+This fixture omits the footer to keep the case on the item line.
+
+-- dom.html --
+<section class="todoapp">
+	<header class="header">
+		<h1>todos</h1>
+		<input class="new-todo" placeholder="What needs to be done?">
+	</header>
+	<section class="main">
+		<input id="toggle-all" class="toggle-all" type="checkbox">
+		<label for="toggle-all">Mark all as complete</label>
+		<ul class="todo-list">
+			<li class="completed" data-id="t1">
+				<div class="view">
+					<input class="toggle" type="checkbox">
+					<label>buy milk</label>
+					<button class="destroy"></button>
+				</div>
+				<input class="edit" value="buy milk">
+			</li>
+		</ul>
+	</section>
+</section>
+
+-- projection.txt --
+v > ""
+#t1 [ ] ~buy milk~

@@ -107,6 +107,11 @@ named or not (see "Runner obligations").
 The projection is an ASCII rendering of the page, top to bottom. `THEN page:` compares
 it line by line; anything not projected is ignored.
 
+The rules below are pinned by example in `evals/projection/`: fixed HTML fragments,
+deduced from the template, each paired with its exact projection. A rebuilt projector
+must reproduce every one. That suite verifies this mapping without a running app; keep
+it in step when these rules change.
+
 Every line follows from a **local rule on a declared marker** — a class, an attribute,
 an input's `.value`, an element's text, or an element's presence. The projection never
 infers state from rendered styling: no computed colors, strike-through, or visibility.
@@ -236,6 +241,10 @@ deliberately.
 ## Runner obligations
 
 - Discover and execute every scenario in every `evals/scenarios/*.md` file.
+- Project the page per § Page projection, and satisfy `evals/projection/`: the
+  projector's output for each fixture must equal the paired projection. Those fixtures
+  pin the projector's raw output, so their item lines carry each row's data-id — the
+  form this list's `THEN page:` comparison produces *before* it erases unmatched ids.
 - Compare `THEN page:` by exact line-by-line diff of the projection; on failure, print
   expected and actual projections side by side. Render actual item lines with their
   data-id, then erase ids from actual lines whose expected counterpart carries none,

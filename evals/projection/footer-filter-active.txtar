@@ -1,0 +1,43 @@
+The Active filter is selected, so the app renders only the active todo — the
+completed one is filtered out and produces no `<li>`, hence no line. The filter
+list projects `All (Active) Completed`. The counter and the Clear-completed
+segment reflect the whole model (a completed todo still exists), not the shown
+list.
+Pins: Active selected → `(Active)`; filtered-out todo produces no line; counter
+and Clear-completed follow the model, not the view.
+
+-- dom.html --
+<section class="todoapp">
+	<header class="header">
+		<h1>todos</h1>
+		<input class="new-todo" placeholder="What needs to be done?">
+	</header>
+	<section class="main">
+		<input id="toggle-all" class="toggle-all" type="checkbox">
+		<label for="toggle-all">Mark all as complete</label>
+		<ul class="todo-list">
+			<li data-id="t1">
+				<div class="view">
+					<input class="toggle" type="checkbox">
+					<label>buy milk</label>
+					<button class="destroy"></button>
+				</div>
+				<input class="edit" value="buy milk">
+			</li>
+		</ul>
+	</section>
+	<footer class="footer">
+		<span class="todo-count"><strong>1</strong> item left</span>
+		<ul class="filters">
+			<li><a href="/">All</a></li>
+			<li><a class="selected" href="/active">Active</a></li>
+			<li><a href="/completed">Completed</a></li>
+		</ul>
+		<button class="clear-completed">Clear completed</button>
+	</footer>
+</section>
+
+-- projection.txt --
+v > ""
+#t1 [ ] buy milk
+-- **1** item left | All (Active) Completed | [Clear completed]
