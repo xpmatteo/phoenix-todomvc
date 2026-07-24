@@ -25,9 +25,7 @@ task does not need the model you would choose for the hardest design problem in
 the repo. Use your judgement, and prefer a smaller model when the task is
 well-specified.
 
-**Never delegate to Fable.** It costs roughly twice Opus per token, and a
-single Fable subagent has cost more than a whole session of ordinary work.
-Use Opus or below for delegated work.
+**Never delegate to Fable.** It costs roughly twice Opus per token.
 
 # Prose style
 
@@ -43,10 +41,3 @@ reader.
   app") rather than a relationship ("the boundary between runner and app").
 - Explain *why* before *what*. Give the reader the purpose of a thing before the
   mechanical rules for it.
-- Bold is for the one thing a skimmer must not miss. If four things per page are
-  bold, none of them are.
-- Don't over-constrain. State the actual invariant, not one accidental way of
-  meeting it — "the app exposes no web route to seed" not "never use a network
-  listener," which needlessly bans Postgres.
-- Prefer the register of the numbered steps in `evals/HARNESS.md`: short,
-  ordered, imperative.
