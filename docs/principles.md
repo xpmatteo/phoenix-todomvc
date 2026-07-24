@@ -7,7 +7,7 @@
 
 ## Core thesis
 
-Generative AI has collapsed the cost of producing code while the cost of understanding, verifying, and governing it stays high. Therefore code is no longer the asset: the durable asset is the specification, the evaluations, the interfaces/contracts, the data, and the provenance record — everything that lets you delete an implementation and regenerate it with confidence. Maintenance (editing code in place) becomes the antipattern; regeneration behind stable boundaries becomes the default. "The most durable systems of the AI era will be built from code that is meant to die" ("Regenerative Software"). The goal, in the author's words, is "not immortality of code. The goal is immortality of intent."
+Generative AI collapsed the cost of producing code. The cost of understanding, verifying, and governing it stays high. So code is no longer the asset. The durable asset is the specification, the evaluations, the interfaces/contracts, the data, and the provenance record — everything that lets you delete an implementation and regenerate it with confidence. Editing code in place becomes the antipattern; regeneration behind stable boundaries becomes the default. "The most durable systems of the AI era will be built from code that is meant to die" ("Regenerative Software"). The goal, in the author's words, is "not immortality of code. The goal is immortality of intent."
 
 ## Principles
 
