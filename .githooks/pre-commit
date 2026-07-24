@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Block commits that contain recognisable credentials.
+#
+# The subagent log records prompts verbatim, so a token pasted into a prompt
+# would otherwise land in git history, where removing it means a rewrite.
+# This gate scans everything staged, not just the log.
+#
+# Enable once per clone:  git config core.hooksPath .githooks
+#
+# This catches credentials with a recognisable *shape* (API keys, tokens,
+# private keys). It does not catch a password written in prose or an internal
+# hostname. It is a safety net, not a substitute for not pasting secrets.
+
+set -uo pipefail
+
+if ! command -v gitleaks > /dev/null 2>&1; then
+    cat >&2 <<'EOF'
+pre-commit: gitleaks is not installed, so staged changes were not scanned
+           for secrets.
+
+  install:  brew install gitleaks
+  bypass:   git commit --no-verify   (only if you are sure)
+EOF
+    exit 1
+fi
+
+if gitleaks git --staged --redact --no-banner; then
+    exit 0
+fi
+
+cat >&2 <<'EOF'
+
+pre-commit: BLOCKED — a credential was found in the staged changes.
+
+The finding above is redacted; the real value is still in your working tree.
+Committing was prevented, so nothing has entered git history yet.
+
+To resolve:
+  1. Remove the secret from the file it was found in.
+     If it came from .claude/subagent-log.jsonl, delete that record — the
+     log is rebuilt from transcripts and the entry will not come back
+     unless the prompt itself still contains the secret.
+  2. Rotate the credential. Treat anything written to disk as exposed.
+  3. Stage the fix and commit again.
+
+If this is a false positive, add a narrow rule to .gitleaks.toml rather than
+bypassing the hook.
+EOF
+exit 1
