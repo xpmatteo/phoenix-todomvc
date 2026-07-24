@@ -15,6 +15,8 @@ Hard rules:
 - Commit messages record *why* — the reason for the change, not a diff summary.
 - We practise trunk-based development. Commit straight to `main`. Only work in
   a branch or worktree when the user asks for one.
+- A pre-commit hook blocks staged credentials. Enable it once per clone with
+  `git config core.hooksPath .githooks`; without that it silently does nothing.
 
 # Delegating to subagents
 
