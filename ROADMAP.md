@@ -36,8 +36,9 @@ The 18 gaps are folded in (see § Done). Still open:
   projection reads) so the projector never guesses.
 - **Projection acceptance tests** — pin the DOM→projection mapping with fixed HTML
   fixtures and expected projection strings, so the projector is verified without an app.
-- **Prose-style pass** — review all docs against the prose style guide added to
-  `CLAUDE.md` (one idea per sentence, concrete over abstract, why before what).
+- **Prose-style pass** — `handbook.md` and `spec.md` done; still to sweep
+  `architecture.md`, `DSL.md`, `HARNESS.md`, `principles.md`, and the READMEs
+  against the prose style guide in `CLAUDE.md`.
 - **harness.json seed/read contract** — the manifest and the seed/read operations are
   underspecified. HARNESS.md pins only "a JSON array of `{id, title, completed}`,
   replace-all, exit 0 on success". Gaps to nail down, in HARNESS.md:
@@ -88,3 +89,5 @@ The 18 gaps are folded in (see § Done). Still open:
   template. Notable: ids redefined as symbolic labels (§ Todo identity); § Settling
   eventual-consistency contract; projection reads declared class markers vs. rendered
   visibility by rule; always-on structural invariants made unconditional.
+- Prose-style pass over `handbook.md` and `spec.md`; added a "no grand flourishes"
+  rule to the style guide (state findings plainly, no closing epigrams).

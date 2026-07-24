@@ -41,3 +41,5 @@ reader.
   app") rather than a relationship ("the boundary between runner and app").
 - Explain *why* before *what*. Give the reader the purpose of a thing before the
   mechanical rules for it.
+- No grand flourishes. State the finding plainly. Do not end an entry on an
+  aphorism that reframes it as a great revealed truth.
