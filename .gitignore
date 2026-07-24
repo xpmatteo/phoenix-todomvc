@@ -1,0 +1,4 @@
+# Personal Claude Code settings. The shared hook config lives in
+# .claude/settings.json; the subagent run log is committed deliberately.
+.claude/settings.local.json
+.claude/.subagent-log.lock
